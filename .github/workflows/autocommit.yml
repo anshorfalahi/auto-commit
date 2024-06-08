@@ -7,7 +7,7 @@ on:
       - main
       
   schedule:
-  - cron: "0 3,7,10,14 * * *" # See https://crontab.guru/#0_7,9,11,17,20_*_*_*
+  - cron: "50 3,7,10,11,14 * * *" # See https://crontab.guru/#0_7,9,11,17,20_*_*_*
 
 jobs:
   auto_commit:
@@ -27,7 +27,7 @@ jobs:
         run: |
           set -o pipefail
           git config --global --add safe.directory /github/workspace
-          git config --local user.email "anahoraf@gmail.com"
+          git config --local user.email "anahor.maf@gmail.com"
           git config --local user.name "anshorfalahi"
           git config --global --add safe.directory /github/workspace
           git add -A
