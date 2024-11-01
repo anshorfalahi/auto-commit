@@ -6,7 +6,7 @@ on:
       - main
       
   schedule:
-    - cron: "0 3,7,10,14 * * *"  # Eksekusi di waktu acak dalam sehari
+    - cron: "0 3,7,10,14 * * *" # Waktu tetap untuk memicu job setiap hari pada jam 3, 7, 10, 14 UTC
 
 jobs:
   auto_commit:
@@ -14,8 +14,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4      
         with:
-          persist-credentials: false
-          fetch-depth: 0
+         persist-credentials: false
+         fetch-depth: 0
+
+      - name: Random Sleep
+        run: |
+          # Generate a random sleep duration between 0 and 3600 seconds (1 hour)
+          sleep_duration=$((RANDOM % 3600))
+          echo "Sleeping for $sleep_duration seconds..."
+          sleep $sleep_duration
 
       - name: Modify last update
         run: |
@@ -28,9 +35,9 @@ jobs:
           git config --global --add safe.directory /github/workspace
           git config --local user.email "xmatsunichi@gmail.com"
           git config --local user.name "Anshor Falahi"
+          git config --global --add safe.directory /github/workspace
           git add -A
           
-          # Array pesan commit
           arr[0]="chore(bot): 😂 auto commit"
           arr[1]="chore(bot): 😱 auto commit"
           arr[2]="chore(bot): 👿 auto commit"
@@ -41,16 +48,11 @@ jobs:
           arr[7]="chore(bot): 🤖 auto commit"
           arr[8]="chore(bot): 🟩 auto commit"
           arr[9]="chore(bot): 👻 auto commit"
-
-          # Tentukan jumlah commit acak antara 1 sampai 5
-          NUM_COMMITS=$((1 + RANDOM % 5))
-
-          # Loop untuk melakukan commit sesuai NUM_COMMITS
-          for ((i=1; i<=NUM_COMMITS; i++)); do
-            rand=$((RANDOM % ${#arr[@]}))
-            git commit -m "${arr[$rand]}"
-          done
-
+          
+          rand=$((RANDOM % ${#arr[@]}))
+          
+          git commit -m "${arr[$rand]}"
+          
       - name: GitHub Push
         uses: ad-m/github-push-action@v0.8.0
         with:
