@@ -1,12 +1,13 @@
 name: Auto commit
 
 on:
+
   push:
     branches:
       - main
       
   schedule:
-    - cron: "0 * * * *" # Memicu job setiap jam, Anda bisa menyesuaikannya
+  - cron: "0 3,7,10,14 * * *" # See https://crontab.guru/#0_7,9,11,17,20_*_*_*
 
 jobs:
   auto_commit:
@@ -17,26 +18,11 @@ jobs:
          persist-credentials: false
          fetch-depth: 0
 
-      - name: Generate random sleep time
-        run: |
-          # Generate a random hour between 0 and 23
-          random_hour=$((RANDOM % 24))
-          echo "Sleeping for $random_hour hours..."
-          sleep $((random_hour * 3600))
-
-      - name: Generate random number of commits
-        id: random_commits
-        run: |
-          # Generate a random number of commits between 1 and 5
-          number_of_commits=$((RANDOM % 5 + 1))
-          echo "Number of commits: $number_of_commits"
-          echo "::set-output name=number::$number_of_commits"
-
       - name: Modify last update
         run: |
           d=`date '+%Y-%m-%dT%H:%M:%SZ'`
           echo $d > LAST_UPDATED
-
+          
       - name: Commit changes
         run: |
           set -o pipefail
@@ -44,29 +30,23 @@ jobs:
           git config --local user.email "xmatsunichi@gmail.com"
           git config --local user.name "Anshor Falahi"
           git config --global --add safe.directory /github/workspace
+          git add -A
           
-          for ((i=0; i<${{ steps.random_commits.outputs.number }}; i++)); do
-            echo "Making commit #$((i + 1))"
-            echo "This is a commit number $((i + 1))" >> COMMIT_FILE_$((i + 1))
-            
-            git add COMMIT_FILE_$((i + 1))
-            
-            arr[0]="chore(bot): 😂 auto commit #$((i + 1))"
-            arr[1]="chore(bot): 😱 auto commit #$((i + 1))"
-            arr[2]="chore(bot): 👿 auto commit #$((i + 1))"
-            arr[3]="chore(bot): 💩 auto commit #$((i + 1))"
-            arr[4]="chore(bot): 🙏 auto commit #$((i + 1))"
-            arr[5]="chore(bot): 🙈 auto commit #$((i + 1))"
-            arr[6]="chore(bot): 🐐 auto commit #$((i + 1))"
-            arr[7]="chore(bot): 🤖 auto commit #$((i + 1))"
-            arr[8]="chore(bot): 🟩 auto commit #$((i + 1))"
-            arr[9]="chore(bot): 👻 auto commit #$((i + 1))"
-            
-            rand=$((RANDOM % ${#arr[@]}))
-            
-            git commit -m "${arr[$rand]}"
-          done
-
+          arr[0]="chore(bot): 😂 auto commit"
+          arr[1]="chore(bot): 😱 auto commit"
+          arr[2]="chore(bot): 👿 auto commit"
+          arr[3]="chore(bot): 💩 auto commit"
+          arr[4]="chore(bot): 🙏 auto commit"
+          arr[5]="chore(bot): 🙈 auto commit"
+          arr[6]="chore(bot): 🐐 auto commit"
+          arr[7]="chore(bot): 🤖 auto commit"
+          arr[8]="chore(bot): 🟩 auto commit"
+          arr[9]="chore(bot): 👻 auto commit"
+          
+          rand=$[$RANDOM % ${#arr[@]}]
+          
+          git commit -m "${arr[$rand]}"
+          
       - name: GitHub Push
         uses: ad-m/github-push-action@v0.8.0
         with:
